@@ -9,7 +9,7 @@ router.register(r'stats', VisitStatsViewSet, basename='stats')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('<slug:slug>/', card_detail, name='card_detail'),
     path('register/', register_user, name='register'),
     path('login/', login_user, name='login'),
+    path('<slug:slug>/', card_detail, name='card_detail'),
 ]

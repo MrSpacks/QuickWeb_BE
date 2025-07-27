@@ -9,17 +9,26 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from .models import BusinessCard, SocialLink, VisitStats
 from .serializers import BusinessCardSerializer, SocialLinkSerializer, VisitStatsSerializer
+from rest_framework import viewsets
 
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
 def card_detail(request, slug):
-    card = get_object_or_404(BusinessCard, slug=slug, is_active=True)
-    return render(request, 'visiting/card_detail.html', {'card': card})
+    try:
+        card = BusinessCard.objects.get(slug=slug, is_active=True)
+    except BusinessCard.DoesNotExist:
+        return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-class BusinessCardViewSet(ModelViewSet):
+    serializer = BusinessCardSerializer(card)
+    return Response(serializer.data)
+
+class BusinessCardViewSet(viewsets.ModelViewSet):
     queryset = BusinessCard.objects.all()
     serializer_class = BusinessCardSerializer
-
+    lookup_field = 'slug'
     def get_permissions(self):
-        if self.action in ['retrieve']:
+        if self.action in ['retrieve', 'list']:  # Публичный доступ для retrieve и list
             return [AllowAny()]
         return [IsAuthenticated()]
 
@@ -31,7 +40,7 @@ class BusinessCardViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-class SocialLinkViewSet(ModelViewSet):
+class SocialLinkViewSet(viewsets.ModelViewSet):
     queryset = SocialLink.objects.all()
     serializer_class = SocialLinkSerializer
     permission_classes = [IsAuthenticated]

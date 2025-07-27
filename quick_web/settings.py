@@ -1,16 +1,16 @@
- 
 from pathlib import Path
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Секретный ключ для Django (НЕ публикуй в проде)
 SECRET_KEY = 'django-insecure-$k(g=2eh8w&+4tp)ro%ra-gz3m7c@8mqr536egw_@dtj_x1m#h'
 
+# Включен режим отладки (только для разработки)
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []  # Разрешённые хосты (в проде — обязательно указать домены)
 
-
-# Application definition
-
+# Установленные приложения
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -18,30 +18,41 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Сторонние библиотеки
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+
+    # Приложения проекта
     'api',
 ]
 
+# Промежуточные слои обработки запросов
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware', 
+
+    # Поддержка CORS для работы с React-фронтендом
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Собственный middleware (если используешь для аналитики и т.п.)
     'api.middleware.VisitTrackingMiddleware',
 ]
 
 ROOT_URLCONF = 'quick_web.urls'
 
+# Настройки шаблонов (используются Django Views)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],  # Здесь можно указать путь к HTML-шаблонам (если нужно)
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -55,10 +66,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'quick_web.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# Используем SQLite для локальной разработки
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -66,10 +74,7 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
+# Проверка надёжности паролей
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -85,47 +90,41 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
+# Язык и часовой пояс
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# Статические файлы (CSS, JS)
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# Медиа-файлы (загрузки пользователей: фото, фон и т.д.)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Настройки Django REST Framework
 REST_FRAMEWORK = {
+    # Аутентификация через токен и сессии
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
+    # По умолчанию доступ только для авторизованных пользователей
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
+# CORS (разрешаем доступ с фронтенда, например, React на порту 5173)
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
 
-# временно
+# Разрешённые методы и заголовки для запросов с фронтенда
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = ['content-type', 'authorization']
-# CORS_ALLOW_ALL_ORIGINS = True  # Только для разработки!
-CORS_ALLOW_CREDENTIALS = True  # если используешь куки/сессии
+CORS_ALLOW_CREDENTIALS = True  # Нужен, если работаешь с авторизацией через куки/сессии
+
+# Тип поля по умолчанию для моделей
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

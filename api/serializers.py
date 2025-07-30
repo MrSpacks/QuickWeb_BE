@@ -1,12 +1,10 @@
 from rest_framework import serializers
 from .models import BusinessCard, SocialLink, VisitStats
-from django.conf import settings
 
 class SocialLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialLink
-        fields = ['id', 'platform', 'url', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        fields = ['platform', 'url']  # Убрали id, created_at
 
 class BusinessCardSerializer(serializers.ModelSerializer):
     social_links = SocialLinkSerializer(many=True, required=False)
@@ -14,10 +12,6 @@ class BusinessCardSerializer(serializers.ModelSerializer):
     background_image = serializers.ImageField(required=False)
     user = serializers.StringRelatedField(read_only=True)
 
-    def get_avatar(self, obj):
-        if obj.avatar:
-            return f"{settings.MEDIA_URL}{obj.avatar}"
-        return None
     class Meta:
         model = BusinessCard
         fields = [
@@ -29,7 +23,7 @@ class BusinessCardSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 
     def create(self, validated_data):
-        print("Validated data:", validated_data)  # Отладка
+        print("Validated data (create):", validated_data)
         social_links_data = validated_data.pop('social_links', [])
         card = BusinessCard.objects.create(**validated_data)
         for link_data in social_links_data:
@@ -37,7 +31,7 @@ class BusinessCardSerializer(serializers.ModelSerializer):
         return card
 
     def update(self, instance, validated_data):
-        print("Validated data:", validated_data)  # Отладка
+        print("Validated data (update):", validated_data)
         social_links_data = validated_data.pop('social_links', [])
         instance.title = validated_data.get('title', instance.title)
         instance.slug = validated_data.get('slug', instance.slug)
@@ -53,7 +47,7 @@ class BusinessCardSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
 
-        instance.social_links.all().delete()
+        instance.social_links.all().delete()  # Удаляем старые ссылки
         for link_data in social_links_data:
             SocialLink.objects.create(card=instance, **link_data)
         return instance

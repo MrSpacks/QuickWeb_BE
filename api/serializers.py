@@ -1,15 +1,16 @@
 from rest_framework import serializers
 from .models import BusinessCard, SocialLink, VisitStats
+import json
 
 class SocialLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialLink
-        fields = ['platform', 'url']  # Убрали id, created_at
+        fields = ['platform', 'url']  # Убрали id
 
 class BusinessCardSerializer(serializers.ModelSerializer):
     social_links = SocialLinkSerializer(many=True, required=False)
-    avatar = serializers.ImageField(required=False)
-    background_image = serializers.ImageField(required=False)
+    avatar = serializers.ImageField(required=False, allow_null=True)
+    background_image = serializers.ImageField(required=False, allow_null=True)
     user = serializers.StringRelatedField(read_only=True)
 
     class Meta:
@@ -22,6 +23,17 @@ class BusinessCardSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 
+    def to_internal_value(self, data):
+        # Создаём изменяемую копию QueryDict
+        mutable_data = data.copy() if hasattr(data, 'copy') else data
+        # Парсим social_links из строки в список
+        if 'social_links' in mutable_data and isinstance(mutable_data['social_links'], str):
+            try:
+                mutable_data['social_links'] = json.loads(mutable_data['social_links'])
+            except json.JSONDecodeError:
+                raise serializers.ValidationError({'social_links': 'Invalid JSON format'})
+        return super().to_internal_value(mutable_data)
+
     def create(self, validated_data):
         print("Validated data (create):", validated_data)
         social_links_data = validated_data.pop('social_links', [])
@@ -33,21 +45,13 @@ class BusinessCardSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         print("Validated data (update):", validated_data)
         social_links_data = validated_data.pop('social_links', [])
-        instance.title = validated_data.get('title', instance.title)
-        instance.slug = validated_data.get('slug', instance.slug)
-        instance.subtitle = validated_data.get('subtitle', instance.subtitle)
-        instance.description = validated_data.get('description', instance.description)
-        instance.email = validated_data.get('email', instance.email)
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.avatar = validated_data.get('avatar', instance.avatar)
-        instance.background_image = validated_data.get('background_image', instance.background_image)
-        instance.template_id = validated_data.get('template_id', instance.template_id)
-        instance.background_color = validated_data.get('background_color', instance.background_color)
-        instance.font_style = validated_data.get('font_style', instance.font_style)
-        instance.is_active = validated_data.get('is_active', instance.is_active)
+        # Обновление полей карточки
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         instance.save()
 
-        instance.social_links.all().delete()  # Удаляем старые ссылки
+        # Удаляем старые ссылки и добавляем новые
+        instance.social_links.all().delete()
         for link_data in social_links_data:
             SocialLink.objects.create(card=instance, **link_data)
         return instance

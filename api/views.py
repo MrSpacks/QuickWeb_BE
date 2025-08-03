@@ -22,8 +22,35 @@ def card_detail(request, slug):
 
     serializer = BusinessCardSerializer(card)
     return Response(serializer.data)
-
 class BusinessCardViewSet(viewsets.ModelViewSet):
+    queryset = BusinessCard.objects.all()
+    serializer_class = BusinessCardSerializer
+    lookup_field = 'slug'
+
+    def get_permissions(self):
+        if self.action in ['retrieve', 'list']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return self.queryset.filter(user=self.request.user)
+        return self.queryset.filter(is_active=True)
+
+    def perform_create(self, serializer):
+        print("perform_create called with data:", self.request.data)
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        print("perform_update called with data:", self.request.data)
+        serializer.save()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        print("Retrieve response:", serializer.data)  # Отладка
+        return Response(serializer.data)
+        
     queryset = BusinessCard.objects.all()
     serializer_class = BusinessCardSerializer
     lookup_field = 'slug'

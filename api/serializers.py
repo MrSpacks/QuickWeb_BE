@@ -1,3 +1,5 @@
+# serializers.py
+
 from rest_framework import serializers
 from .models import BusinessCard, SocialLink, VisitStats
 import json
@@ -5,7 +7,7 @@ import json
 class SocialLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialLink
-        fields = ['platform', 'url']  # Убрали id
+        fields = ['platform', 'url']
 
 class BusinessCardSerializer(serializers.ModelSerializer):
     social_links = SocialLinkSerializer(many=True, required=False)
@@ -23,39 +25,46 @@ class BusinessCardSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 
-    def to_internal_value(self, data):
-        # Создаём изменяемую копию QueryDict
-        mutable_data = data.copy() if hasattr(data, 'copy') else data
-        # Парсим social_links из строки в список
-        if 'social_links' in mutable_data and isinstance(mutable_data['social_links'], str):
-            try:
-                mutable_data['social_links'] = json.loads(mutable_data['social_links'])
-            except json.JSONDecodeError:
-                raise serializers.ValidationError({'social_links': 'Invalid JSON format'})
-        return super().to_internal_value(mutable_data)
+    # We can remove to_internal_value as it's not strictly necessary with this approach.
 
     def create(self, validated_data):
-        print("Validated data (create):", validated_data)
-        social_links_data = validated_data.pop('social_links', [])
+        social_links_data = self.context['request'].data.get('social_links', '[]')
+        try:
+            social_links_list = json.loads(social_links_data)
+        except json.JSONDecodeError:
+            social_links_list = []
+
+        # Remove social_links from validated_data to avoid conflicts
+        validated_data.pop('social_links', None)
+
         card = BusinessCard.objects.create(**validated_data)
-        for link_data in social_links_data:
+        
+        for link_data in social_links_list:
             SocialLink.objects.create(card=card, **link_data)
+        
         return card
 
     def update(self, instance, validated_data):
-        print("Validated data (update):", validated_data)
-        social_links_data = validated_data.pop('social_links', [])
-        # Обновление полей карточки
+        social_links_data = self.context['request'].data.get('social_links', '[]')
+        try:
+            social_links_list = json.loads(social_links_data)
+        except json.JSONDecodeError:
+            social_links_list = []
+
+        # Remove social_links from validated_data
+        validated_data.pop('social_links', None)
+        
+        # Update other fields of the card
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-
-        # Удаляем старые ссылки и добавляем новые
+        
+        # Delete old links and create new ones
         instance.social_links.all().delete()
-        for link_data in social_links_data:
+        for link_data in social_links_list:
             SocialLink.objects.create(card=instance, **link_data)
-        return instance
 
+        return instance
 class VisitStatsSerializer(serializers.ModelSerializer):
     card_title = serializers.CharField(source='card.title', read_only=True)
 

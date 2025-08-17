@@ -15,6 +15,7 @@ class BusinessCard(models.Model):
     background_image = models.ImageField(upload_to='backgrounds/', blank=True, null=True)
     template_id = models.CharField(max_length=50)
     background_color = models.CharField(max_length=7, default='#FFFFFF')
+    text_color = models.CharField(max_length=7, default='#000000')
     font_style = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

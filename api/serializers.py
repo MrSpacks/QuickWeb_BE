@@ -13,6 +13,7 @@ class BusinessCardSerializer(serializers.ModelSerializer):
     social_links = SocialLinkSerializer(many=True, required=False)
     avatar = serializers.ImageField(required=False, allow_null=True)
     background_image = serializers.ImageField(required=False, allow_null=True)
+    text_color = serializers.CharField(max_length=7, default='#000000')
     user = serializers.StringRelatedField(read_only=True)
 
     class Meta:
@@ -20,7 +21,7 @@ class BusinessCardSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user', 'slug', 'title', 'subtitle', 'description',
             'email', 'phone', 'avatar', 'background_image',
-            'template_id', 'background_color', 'font_style',
+            'template_id', 'background_color', 'text_color', 'font_style',
             'social_links', 'created_at', 'updated_at', 'is_active'
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']

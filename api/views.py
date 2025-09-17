@@ -42,7 +42,7 @@ class BusinessCardViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
-        print("perform_update called with data:", self.request.data)
+        print("DEBUG: Обновление карточки с данными:", self.request.data)
         serializer.save()
 
     def retrieve(self, request, *args, **kwargs):
@@ -65,8 +65,9 @@ class BusinessCardViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(is_active=True)
 
     def perform_create(self, serializer):
+        print("DEBUG: Создание карточки с данными:", self.request.data)
         serializer.save(user=self.request.user)
-
+    
 class SocialLinkViewSet(viewsets.ModelViewSet):
     queryset = SocialLink.objects.all()
     serializer_class = SocialLinkSerializer

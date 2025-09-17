@@ -128,3 +128,35 @@ CORS_ALLOW_CREDENTIALS = True  # Нужен, если работаешь с ав
 
 # Тип поля по умолчанию для моделей
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',  # Вывод в терминал
+            'level': 'DEBUG',  # Показывает все уровни (DEBUG, INFO, WARNING, ERROR)
+        },
+        'file': {
+            'class': 'logging.FileHandler',  # Сохранение в файл
+            'filename': 'debug.log',
+            'level': 'DEBUG',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'DEBUG',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'api': {  # Логи для твоего приложения 'api'
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

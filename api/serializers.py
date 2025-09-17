@@ -29,6 +29,7 @@ class BusinessCardSerializer(serializers.ModelSerializer):
     # We can remove to_internal_value as it's not strictly necessary with this approach.
 
     def create(self, validated_data):
+        print("DEBUG: Validated data в create:", validated_data)
         social_links_data = self.context['request'].data.get('social_links', '[]')
         try:
             social_links_list = json.loads(social_links_data)
@@ -46,6 +47,7 @@ class BusinessCardSerializer(serializers.ModelSerializer):
         return card
 
     def update(self, instance, validated_data):
+        print("DEBUG: Validated data в update:", validated_data)
         social_links_data = self.context['request'].data.get('social_links', '[]')
         try:
             social_links_list = json.loads(social_links_data)

@@ -6,10 +6,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$k(g=2eh8w&+4tp)ro%ra-gz3m7c@8mqr536egw_@dtj_x1m#h'
 
 # Включен режим отладки (только для разработки)
-DEBUG = True
-
-ALLOWED_HOSTS = []  # Разрешённые хосты (в проде — обязательно указать домены)
-
+# DEBUG = True
+DEBUG = False
+ALLOWED_HOSTS = ["13.61.13.177"]
 # Установленные приложения
 INSTALLED_APPS = [
     'django.contrib.admin',

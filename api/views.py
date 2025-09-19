@@ -38,17 +38,17 @@ class BusinessCardViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(is_active=True)
 
     def perform_create(self, serializer):
-        print("perform_create called with data:", self.request.data)
+        # print("perform_create called with data:", self.request.data)
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
-        print("DEBUG: Обновление карточки с данными:", self.request.data)
+        # print("DEBUG: Обновление карточки с данными:", self.request.data)
         serializer.save()
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        print("Retrieve response:", serializer.data)  # Отладка
+        print("Retrieve response:", serializer.data)  
         return Response(serializer.data)
         
     queryset = BusinessCard.objects.all()

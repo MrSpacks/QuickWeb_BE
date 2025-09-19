@@ -1,10 +1,14 @@
 # QuickWeb_BE
 
-Steps for start project:
+# Steps for start project:
+
+# fast start
 
 make run
 
 or
+
+# not fast)
 
 1 cd quick_web
 2 start venv fo python - source .venv/bin/activate
@@ -14,9 +18,10 @@ or
 For add new element in model : python manage.py makemigrations
 python manage.py migrate
 
-changed pull - git pull origin main
+# pull AWS sserver - git pull origin main
 
-conect AWS server
+# conect AWS server
+
 ssh -i /Users/sergeipetuhov/Downloads/myproject.pem ubuntu@13.61.13.177
 
 cd ~/QuickWeb_BE

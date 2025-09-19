@@ -2,13 +2,19 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Секретный ключ для Django (НЕ публикуй в проде)
+# !!! Не забудь потом сменить секретный ключ, если проект выйдет в продакшн
 SECRET_KEY = 'django-insecure-$k(g=2eh8w&+4tp)ro%ra-gz3m7c@8mqr536egw_@dtj_x1m#h'
 
-# Включен режим отладки (только для разработки)
-# DEBUG = True
-DEBUG = False
-ALLOWED_HOSTS = ["13.61.13.177"]
+# Оставляем DEBUG включённым везде
+DEBUG = True
+
+# Разрешаем доступ как с локали, так и с AWS
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "13.61.13.177",  # твой AWS сервер
+]
+
 # Установленные приложения
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -27,12 +33,11 @@ INSTALLED_APPS = [
     'api',
 ]
 
-# Промежуточные слои обработки запросов
+# Промежуточные слои
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 
-    # Поддержка CORS для работы с React-фронтендом
     'corsheaders.middleware.CorsMiddleware',
 
     'django.middleware.common.CommonMiddleware',
@@ -41,17 +46,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # Собственный middleware (если используешь для аналитики и т.п.)
     'api.middleware.VisitTrackingMiddleware',
 ]
 
 ROOT_URLCONF = 'quick_web.urls'
 
-# Настройки шаблонов (используются Django Views)
+# Шаблоны
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # Здесь можно указать путь к HTML-шаблонам (если нужно)
+        'DIRS': [], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,7 +69,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'quick_web.wsgi.application'
 
-# Используем SQLite для локальной разработки
+# База данных SQLite (файл в проекте)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -73,89 +77,61 @@ DATABASES = {
     }
 }
 
-# Проверка надёжности паролей
+# Валидаторы паролей
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Язык и часовой пояс
+# Локаль
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Статические файлы (CSS, JS)
+# Статика и медиа
 STATIC_URL = 'static/'
-
-# Медиа-файлы (загрузки пользователей: фото, фон и т.д.)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Настройки Django REST Framework
+# DRF
 REST_FRAMEWORK = {
-    # Аутентификация через токен и сессии
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
-    # По умолчанию доступ только для авторизованных пользователей
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
 
-# CORS (разрешаем доступ с фронтенда, например, React на порту 5173)
+# CORS: разрешаем локальный фронт и AWS по IP
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://13.61.13.177",
 ]
 
-# Разрешённые методы и заголовки для запросов с фронтенда
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = ['content-type', 'authorization']
-CORS_ALLOW_CREDENTIALS = True  # Нужен, если работаешь с авторизацией через куки/сессии
+CORS_ALLOW_CREDENTIALS = True
 
-# Тип поля по умолчанию для моделей
+# Primary key type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Логирование
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',  # Вывод в терминал
-            'level': 'DEBUG',  # Показывает все уровни (DEBUG, INFO, WARNING, ERROR)
-        },
-        'file': {
-            'class': 'logging.FileHandler',  # Сохранение в файл
-            'filename': 'debug.log',
-            'level': 'DEBUG',
-        },
+        'console': {'class': 'logging.StreamHandler', 'level': 'DEBUG'},
+        'file': {'class': 'logging.FileHandler', 'filename': 'debug.log', 'level': 'DEBUG'},
     },
-    'root': {
-        'handlers': ['console', 'file'],
-        'level': 'DEBUG',
-    },
+    'root': {'handlers': ['console', 'file'], 'level': 'DEBUG'},
     'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'api': {  # Логи для твоего приложения 'api'
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
+        'django': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'api': {'handlers': ['console', 'file'], 'level': 'DEBUG', 'propagate': False},
     },
 }

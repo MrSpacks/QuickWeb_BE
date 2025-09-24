@@ -27,3 +27,5 @@ ssh -i /Users/sergeipetuhov/Downloads/myproject.pem ubuntu@13.61.13.177
 cd ~/QuickWeb_BE
 source venv/bin/activate
 gunicorn quick_web.wsgi:application --bind 0.0.0.0:8000
+
+

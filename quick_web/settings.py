@@ -9,14 +9,7 @@ SECRET_KEY = 'django-insecure-$k(g=2eh8w&+4tp)ro%ra-gz3m7c@8mqr536egw_@dtj_x1m#h
 DEBUG = True
 
 # Разрешаем доступ как с локали, так и с AWS
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "13.61.13.177",
-    "13.62.115.181",  #  AWS сервер
-    "quick-web-fe.vercel.app",
-    "webcardss.click"
-]
+ALLOWED_HOSTS = ["*",]
 
 # Установленные приложения
 INSTALLED_APPS = [

@@ -20,6 +20,8 @@ python manage.py migrate
 
 # pull AWS sserver - git pull origin main
 
+              sudo systemctl restart nginx
+
 # conect AWS server
 
 ssh -i /Users/sergeipetuhov/Downloads/myproject.pem ubuntu@13.61.13.177

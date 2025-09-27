@@ -14,6 +14,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "13.61.13.177",  #  AWS сервер
     "quick-web-fe.vercel.app",
+    "webcardss.click"
 ]
 
 # Установленные приложения

@@ -113,7 +113,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://13.61.13.177:8000",
-    "https://quick-web-fe.vercel.app",  # AWS сервер
+    "http://13.62.115.181:8000",  # AWS сервер
+    "https://quick-web-fe.vercel.app",
+    "https://webcardss.click"
+
 ]
 
 CORS_ALLOW_METHODS = [

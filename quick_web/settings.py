@@ -12,7 +12,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "13.61.13.177",  #  AWS сервер
+    "13.61.13.177",
+    "13.62.115.181",  #  AWS сервер
     "quick-web-fe.vercel.app",
     "webcardss.click"
 ]

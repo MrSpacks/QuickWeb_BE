@@ -8,7 +8,7 @@ make run
 
 or
 
-# not fast)
+# not fast
 
 1 cd quick_web
 2 start venv fo python - source .venv/bin/activate
@@ -18,15 +18,11 @@ or
 For add new element in model : python manage.py makemigrations
 python manage.py migrate
 
-# pull AWS sserver - git pull origin main
+# For new instalation:
 
-              sudo systemctl restart nginx
-
-# conect AWS server
-
-ssh -i /Users/sergeipetuhov/Downloads/myproject.pem ubuntu@13.61.13.177
-ssh -i /Users/sergeipetuhov/Downloads/myproject.pem ubuntu@13.62.115.181
-
-cd ~/QuickWeb_BE
-source venv/bin/activate
-gunicorn quick_web.wsgi:application --bind 0.0.0.0:8000
+1 initial VENV:
+# python -m venv venv
+2 start venv
+# <>
+3 install pakets:
+# pip install -r requirements.txt
